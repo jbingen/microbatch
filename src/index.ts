@@ -23,7 +23,6 @@ export function batcher<K, V>(
   const maxWait = options?.maxWait ?? 0;
 
   let queue = new Map<K, Pending<V>[]>();
-  let queueSize = 0;
   let scheduled = false;
   let timer: ReturnType<typeof setTimeout> | null = null;
   let inFlight: Promise<void> | null = null;
@@ -48,11 +47,10 @@ export function batcher<K, V>(
     }
     scheduled = false;
 
-    if (queueSize === 0) return;
+    if (queue.size === 0) return;
 
     const batch = queue;
     queue = new Map();
-    queueSize = 0;
 
     inFlight = executeBatch(batch).finally(() => { inFlight = null; });
   }
@@ -88,9 +86,8 @@ export function batcher<K, V>(
         } else {
           queue.set(key, [{ resolve, reject }]);
         }
-        queueSize++;
 
-        if (queueSize >= maxSize) {
+        if (queue.size >= maxSize) {
           dispatch();
         } else {
           schedule();
@@ -99,8 +96,11 @@ export function batcher<K, V>(
     },
 
     async flush() {
-      dispatch();
-      while (inFlight) await inFlight;
+      while (true) {
+        dispatch();
+        if (inFlight) await inFlight;
+        if (queue.size === 0 && !inFlight && !scheduled) return;
+      }
     },
   };
 }

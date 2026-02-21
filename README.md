@@ -93,7 +93,7 @@ await loader.flush();
 
 ### `maxSize`
 
-Caps the batch size. When the queue hits `maxSize`, it flushes immediately without waiting for the microtask. Remaining items go into the next batch.
+Caps the number of unique keys per batch. When the queue hits `maxSize` unique keys, it flushes immediately without waiting for the microtask. Duplicate loads for the same key don't count toward the limit. Remaining keys go into the next batch.
 
 ```typescript
 const loader = batcher(batchFn, { maxSize: 50 });
@@ -139,5 +139,5 @@ If the batch function itself throws (e.g., network error), every caller in that 
 - Batches within a microtask by default. No timers unless you opt in with `maxWait`.
 - Batch function must return a `Map` for per-key resolution. Arrays would require positional matching which is fragile.
 - No caching, no deduplication, no memoization. This is just the batching primitive.
-- Works with any key type that can be a `Map` key (strings, numbers, objects by reference).
+- Works with any key type that can be a `Map` key (strings, numbers, objects by reference). Object keys use reference equality - two `{ id: 1 }` literals won't dedupe unless they're the same reference.
 - `maxSize` flushes synchronously so you can control memory and payload size.
