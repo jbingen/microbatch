@@ -1,7 +1,7 @@
 # 🧺 microbatch
 
-[![npm version](https://img.shields.io/npm/v/microbatch)](https://www.npmjs.com/package/microbatch)
-[![npm bundle size](https://img.shields.io/npm/unpacked-size/microbatch)](https://www.npmjs.com/package/microbatch)
+[![npm version](https://img.shields.io/npm/v/@jbingen/microbatch)](https://www.npmjs.com/package/@jbingen/microbatch)
+[![npm bundle size](https://img.shields.io/npm/unpacked-size/@jbingen/microbatch)](https://www.npmjs.com/package/@jbingen/microbatch)
 [![license](https://img.shields.io/github/license/jbingen/microbatch)](https://github.com/jbingen/microbatch/blob/main/LICENSE)
 
 Automatic request batching. Collects individual calls into batches within a microtask.
@@ -9,7 +9,7 @@ Automatic request batching. Collects individual calls into batches within a micr
 For anyone dealing with N+1 queries, request fan-out, or redundant API calls.
 
 ```
-npm install microbatch
+npm install @jbingen/microbatch
 ```
 
 ```typescript
@@ -30,7 +30,7 @@ const [user1, user2, user3] = await Promise.all([
 Individual `load()` calls within the same microtask are automatically collected and dispatched as a single batch. Each caller gets back just their result.
 
 ```typescript
-import { batcher } from "microbatch";
+import { batcher } from "@jbingen/microbatch";
 
 const userLoader = batcher(async (ids: number[]) => {
   const users = await db.query("SELECT * FROM users WHERE id IN (?)", ids);
